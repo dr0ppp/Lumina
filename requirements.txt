@@ -1,0 +1,2 @@
+# Phase 1 runtime, pinned for reproducible verification.
+lxml==6.1.1

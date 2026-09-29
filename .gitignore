@@ -216,3 +216,36 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Lumina: private media, sidecars, backups and local configuration.
+.local/
+photos/
+samples/
+local-config/
+.env.*
+secrets.*
+*.pem
+*.key
+*.[nN][eE][fF]
+*.[nN][rR][wW]
+*.[dD][nN][gG]
+*.[aA][rR][wW]
+*.[cC][rR]2
+*.[cC][rR]3
+*.[rR][aA][fF]
+*.[oO][rR][fF]
+*.[rR][wW]2
+*.[rR][aA][wW]
+*.[xX][mM][pP]
+*.[aA][cC][rR]
+*.lumina-*.bak
+*.lumina-*.tmp
+*.[jJ][pP][gG]
+*.[jJ][pP][eE][gG]
+*.[pP][nN][gG]
+*.[tT][iI][fF]
+*.[tT][iI][fF][fF]
+*.[pP][sS][dD]
+*.[pP][sS][bB]
+*.[hH][eE][iI][cC]
+*.[wW][eE][bB][pP]
