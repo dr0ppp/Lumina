@@ -13,7 +13,7 @@ Lumina 面向 Nikon NEF / Adobe Camera Raw 工作流，将摄影语言逐步转�
 - 保留其他元数据、曲线、快照、局部调整及未知字段；从不写入 NEF。
 - 当前仅允许写入 `ProcessVersion="15.4"`，对应已检查的 ACR 17.5 样本。其他版本可以检查已记录字段，但禁止写入，不自动迁移。
 
-目标环境为 Windows / Photoshop 2025。本机发现 Camera Raw 17.5，真实样本也记录为 17.5。Photoshop 年份不等于 ACR 版本；软件测试及真实 XMP 文件验证已完成，ACR 界面验收状态见 [验证记录](docs/validation.md)。
+目标环境为 Windows / Photoshop 2025。本机发现 Camera Raw 17.5，真实样本也记录为 17.5。Photoshop 年份不等于 ACR 版本。64 项自动测试、真实 XMP 文件验证均通过，用户已确认 ACR 重开测试副本后曝光显示 +0.50；详细范围见 [验证记录](docs/validation.md)。当前停留在 Phase 1 开发版本，尚未正式发布。
 
 ## 安装
 
