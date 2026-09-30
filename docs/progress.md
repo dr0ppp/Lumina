@@ -7,7 +7,7 @@
 - Phase 1：读取十项 XMP 参数、安全写曝光，用户确认 ACR 重开显示 +0.50。分支 `codex/phase1-xmp`，草稿 [PR #1](https://github.com/dr0ppp/Lumina/pull/1)。
 - Phase 2：本地明确参数指令、相对/绝对语义、前后值预览、八项全局参数整批保存、预览摘要检查。分支 `codex/phase2-parser`，草稿 [PR #2](https://github.com/dr0ppp/Lumina/pull/2)，基于 Phase 1 分支。
 - 用户确认 Phase 2 副本在 ACR 中曝光 +0.55、高光 -40、阴影 +30 均正确；确认后的 XMP 回读也一致。
-- 200 项本地测试通过，Ruff 通过，覆盖率 95%；安装包及远端验证明细见 [阶段验收记录](phase2-validation.md)。
+- 200 项本地及独立安装测试通过，Ruff 通过，覆盖率 95%；最终代码 `fde5653` 的 Windows/Linux 远端检查全部通过。明细见 [阶段验收记录](phase2-validation.md)。
 
 真实照片、XMP、备份和个人验证报告仅留在被忽略的 `.local/`。没有修改原始 NEF，没有合并 PR 或发布正式版本。
 
