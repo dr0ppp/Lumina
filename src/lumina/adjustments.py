@@ -13,6 +13,11 @@ from .xmp.writer import validate_expected_sha256, validate_write, write_document
 
 def _prepare(nef_path: str | Path, text: str, expected_sha256: str | None = None):
     operations = parse_instructions(text)
+    return _prepare_operations(nef_path, operations, expected_sha256)
+
+
+def _prepare_operations(nef_path, operations, expected_sha256=None):
+    """Internal bridge for already validated, unique immutable operations."""
     document = load_document(nef_path)
     digest = validate_expected_sha256(document, expected_sha256)
     snapshot = document_report(document)

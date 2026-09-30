@@ -36,7 +36,7 @@ def test_error_goes_to_stderr_without_traceback(make_photo, capsys):
 def test_python_module_entrypoint():
     result = subprocess.run([sys.executable, "-m", "lumina", "--version"], capture_output=True, text=True)
     assert result.returncode == 0
-    assert result.stdout.strip() == "0.2.0.dev0"
+    assert result.stdout.strip() == "0.3.0.dev0"
 
 
 def test_redirected_output_is_utf8_even_with_ascii_environment(make_photo):

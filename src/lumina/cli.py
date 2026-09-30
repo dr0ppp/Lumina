@@ -7,6 +7,8 @@ import sys
 from . import __version__
 from .adjustments import apply_adjustments, plan_adjustments
 from .parser import parse_instructions
+from .semantics import catalog, suggest
+from .style_adjustments import apply_style, plan_style
 from .xmp import read_parameters, set_exposure
 from .xmp.errors import LuminaError
 
@@ -38,6 +40,19 @@ def main(argv: list[str] | None = None) -> int:
     apply.add_argument("text", help="用引号包围参数指令；相对调整重复应用会再次增减")
     apply.add_argument("--dry-run", action="store_true", help="检查应用条件并预览，不保存")
     apply.add_argument("--expect-sha256", help="plan 输出的 original_xmp_sha256，用于拒绝过期预览")
+    commands.add_parser("styles", help="列出本地摄影词典及默认幅度")
+    for name, help_text in (("suggest", "只生成摄影语言建议，不访问照片"),
+                            ("plan-style", "根据照片预览摄影语言方案"),
+                            ("apply-style", "应用已预览的摄影语言方案；先保存并关闭 ACR")):
+        style = commands.add_parser(name, help=help_text)
+        if name != "suggest":
+            style.add_argument("nef", help="NEF 文件路径")
+        style.add_argument("text", help="完整词组，例如：压高光，拉阴影")
+        style.add_argument("--strength", choices=("gentle", "standard", "strong"), default="standard",
+                           help="语义默认强度；句中“轻微/明显/一点”优先，明确数字不缩放")
+        if name == "apply-style":
+            style.add_argument("--expect-plan", help="plan-style 输出的 preview_sha256，实际应用必须提供")
+            style.add_argument("--dry-run", action="store_true", help="只检查，不写入；无需预览摘要")
     args = parser.parse_args(argv)
     try:
         if args.command == "read":
@@ -52,10 +67,19 @@ def main(argv: list[str] | None = None) -> int:
             report = {"operations": [operation.to_dict() for operation in parse_instructions(args.text)]}
         elif args.command == "plan":
             report = plan_adjustments(args.nef, args.text)
-        else:
+        elif args.command == "apply":
             report = apply_adjustments(
                 args.nef, args.text, dry_run=args.dry_run, expected_sha256=args.expect_sha256,
             )
+        elif args.command == "styles":
+            report = catalog()
+        elif args.command == "suggest":
+            report = suggest(args.text, args.strength)
+        elif args.command == "plan-style":
+            report = plan_style(args.nef, args.text, strength=args.strength)
+        else:
+            report = apply_style(args.nef, args.text, strength=args.strength,
+                                 expected_preview=args.expect_plan, dry_run=args.dry_run)
         print(json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False))
     except (LuminaError, OSError) as exc:
         print(f"Lumina：{exc}", file=sys.stderr)
