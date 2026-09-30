@@ -1,8 +1,9 @@
 """Explicit mappings for the modern Camera Raw basic-adjustment fields."""
 
 from dataclasses import dataclass
-from decimal import Decimal, InvalidOperation
+from decimal import Decimal
 
+from ..parameters import decimal_value
 from .errors import LuminaError
 
 CRS = "http://ns.adobe.com/camera-raw-settings/1.0/"
@@ -35,19 +36,7 @@ WATCHED_FIELDS = {p.xmp_name for p in PARAMETERS.values()} | set(METADATA) | {
 # Deliberately narrow: observed in the user's ACR 17.5 sidecar, not a claim
 # of visual compatibility with every Camera Raw release. Never upgrade it.
 WRITABLE_PROCESS_VERSIONS = frozenset({"15.4"})
-
-
-def decimal_value(value: object, name: str) -> Decimal:
-    text = str(value).strip()
-    if not text or len(text) > 64 or isinstance(value, bool):
-        raise LuminaError(f"{name} 必须是有限数值。")
-    try:
-        number = Decimal(text)
-    except InvalidOperation as exc:
-        raise LuminaError(f"{name} 不是有效数值：{text!r}") from exc
-    if not number.is_finite() or number.copy_abs() > Decimal("1e9"):
-        raise LuminaError(f"{name} 必须是有限且合理的数值。")
-    return number
+WRITABLE_PARAMETERS = frozenset(PARAMETERS) - {"Temperature", "Tint"}
 
 
 def parameter_value(value: str, name: str) -> int | float:

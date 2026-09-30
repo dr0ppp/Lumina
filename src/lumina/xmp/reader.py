@@ -46,7 +46,7 @@ class XmpDocument:
 def find_sidecar(nef_path: str | Path) -> tuple[Path, Path]:
     nef = Path(nef_path).expanduser().absolute()
     if nef.suffix.casefold() != ".nef":
-        raise LuminaError("Phase 1 仅接受 .NEF 文件路径。")
+        raise LuminaError("当前仅接受 .NEF 文件路径。")
     if not nef.is_file():
         raise LuminaError(f"NEF 文件不存在或不是普通文件：{nef}")
     try:
@@ -68,7 +68,7 @@ def find_sidecar(nef_path: str | Path) -> tuple[Path, Path]:
 
 def parse_xmp(data: bytes) -> etree._ElementTree:
     if len(data) > MAX_XMP_BYTES:
-        raise LuminaError("XMP 超过 Phase 1 的 16 MiB 文件大小上限。")
+        raise LuminaError("XMP 超过当前 16 MiB 文件大小上限。")
     parser = etree.XMLParser(
         resolve_entities=False, load_dtd=False, no_network=True,
         recover=False, remove_blank_text=False, remove_comments=False,

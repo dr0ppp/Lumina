@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lumina-raw"
-version = "0.1.0.dev0"
-description = "A local Camera Raw XMP read/write proof of concept"
+version = "0.2.0.dev0"
+description = "Local parameter instructions and safe Camera Raw XMP adjustments"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = ["lxml>=6.1.1,<7"]
@@ -19,3 +19,17 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+
+[tool.coverage.run]
+branch = true
+source = ["lumina"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
