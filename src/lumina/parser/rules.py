@@ -4,12 +4,11 @@ from dataclasses import dataclass
 from decimal import Decimal
 import re
 from typing import Literal
-import unicodedata
 
 from ..errors import LuminaError
 from ..parameters import RULES, json_number
+from .text import split_instructions
 
-MAX_INPUT_LENGTH = 4096
 ALIASES = {
     "曝光": "Exposure", "对比度": "Contrast", "高光": "Highlights",
     "阴影": "Shadows", "白色": "Whites", "白色色阶": "Whites",
@@ -99,19 +98,7 @@ def _parse_clause(clause: str) -> Adjustment:
 
 def parse_instructions(text: str) -> tuple[Adjustment, ...]:
     """Parse every clause or fail, keeping relative and absolute intent distinct."""
-    if not isinstance(text, str) or not text.strip():
-        raise LuminaError("参数指令不能为空。")
-    if len(text) > MAX_INPUT_LENGTH:
-        raise LuminaError(f"参数指令不能超过 {MAX_INPUT_LENGTH} 个字符。")
-    normalized = unicodedata.normalize("NFKC", text).replace("−", "-").strip()
-    if len(normalized) > MAX_INPUT_LENGTH:
-        raise LuminaError("规范化后的参数指令过长。")
-    normalized = normalized.removesuffix("。").strip()
-    clauses = [part.strip() for part in re.split(r"[,;\r\n]+", normalized) if part.strip()]
-    if not clauses:
-        raise LuminaError("参数指令不能为空。")
-    if len(clauses) > len(RULES):
-        raise LuminaError("一批最多指定十个不同参数。")
+    clauses = split_instructions(text)
     operations = []
     seen = set()
     for index, clause in enumerate(clauses, 1):

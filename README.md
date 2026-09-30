@@ -2,7 +2,7 @@
 
 Lumina 面向 Nikon NEF / Adobe Camera Raw 工作流，将摄影语言逐步转换为可靠的 RAW 显影参数修改。
 
-**当前为 Phase 2 开发版：本地明确参数指令解析、修改预览与 XMP 批量保存。** 不包含“电影感”等摄影语义推断、AI、图片分析、Photoshop 插件或自动刷新。
+**当前为 Phase 3 开发版：本地摄影语言词典、可解释的参数方案、修改预览与 XMP 批量保存。** 词典按完整词组匹配，不分析照片，不包含 AI、Photoshop 插件或自动刷新。
 
 ## 当前能力与范围
 
@@ -10,13 +10,14 @@ Lumina 面向 Nikon NEF / Adobe Camera Raw 工作流，将摄影语言逐步转�
 - 读取 Exposure、Contrast、Highlights、Shadows、Whites、Blacks、Temperature、Tint、Vibrance、Saturation，输出 JSON。
 - 返回 ACR 版本、处理版本、白平衡模式、缺失字段及提示；缺失值不补零。
 - 解析十项参数的明确中文或英文指令，区分“设为”与“增加/降低”；根据当前值预览结果。
+- 支持“压高光、拉阴影、整体提亮”等 17 类本地词典规则，附来源、默认幅度和解释；支持轻微、标准、明显三档强度。
 - 支持八项全局参数写入：曝光、对比度、高光、阴影、白色、黑色、自然饱和度、饱和度；一批修改只有一次备份和一次替换。
 - 色温、色调目前仅解析和预览，涉及白平衡的整批应用会明确拒绝。
 - 支持只预览、原字节备份、临时文件校验、外部修改检测，以及绑定预览摘要的应用。
 - 保留其他元数据、曲线、快照、局部调整及未知字段；从不写入 NEF。
 - 当前仅允许写入 `ProcessVersion="15.4"`，对应已检查的 ACR 17.5 样本。其他版本可以检查已记录字段，但禁止写入，不自动迁移。
 
-目标环境为 Windows / Photoshop 2025。本机发现 Camera Raw 17.5，真实样本也记录为 17.5。Photoshop 年份不等于 ACR 版本。[Phase 1](docs/validation.md) 已验证曝光重开生效；[Phase 2 验证记录](docs/phase2-validation.md) 单独记录新增解析、批量写入及实际验收范围。当前版本 `0.2.0.dev0`，尚未正式发布。
+目标环境为 Windows / Photoshop 2025。本机发现 Camera Raw 17.5，真实样本也记录为 17.5。Photoshop 年份不等于 ACR 版本。[Phase 1](docs/validation.md)、[Phase 2](docs/phase2-validation.md) 和 [Phase 3 验证记录](docs/phase3-validation.md) 分别记录每阶段的实际验收范围。当前版本 `0.3.0.dev0`，尚未正式发布。
 
 ## 安装
 
@@ -101,6 +102,36 @@ $preview.changes | Format-Table
 
 可用参数名为曝光、对比度、高光、阴影、白色（白色色阶）、黑色（黑色色阶）、色温、色调、自然饱和度、饱和度，以及对应英文字段名。支持逗号、分号、换行分隔和全角数字；不接受百分比或科学计数法文字。操作规则详见 [Phase 2 设计](docs/phase2-design.md)。
 
+### 摄影语言建议与预览
+
+查看本地词典，或只生成方案（均不访问照片）：
+
+```powershell
+.\.venv\Scripts\python.exe -m lumina styles
+.\.venv\Scripts\python.exe -m lumina suggest "压高光，拉阴影，整体提亮"
+```
+
+标准建议为高光 -20、阴影 +20、曝光 +0.20 EV，均为**当前值上的增量**。这些是项目默认起点，不是针对照片计算的最佳值。`matches` 说明每条原句采用了什么规则；`operations` 明确参数和增量。
+
+`--strength gentle/standard/strong` 分别使用半幅、原幅、1.5 倍幅度。句内“轻微/稍微/稍稍”或“一点”采用半幅，“明显”采用 1.5 倍，并优先于命令行默认强度。例如“轻微压高光”降低 10，“明显压高光”降低 30；“曝光设为0.5”等明确数值始终保留，不缩放。
+
+先预览，再用完整预览摘要应用同一方案：
+
+```powershell
+$photoPath = "D:\Photos\DSC_0001.NEF"
+$requestText = "压高光，拉阴影，整体提亮"
+$preview = .\.venv\Scripts\python.exe -m lumina plan-style $photoPath $requestText | ConvertFrom-Json
+$preview.changes | Format-Table
+$preview.matches | Format-Table
+$preview.blocked_reasons
+# 先保存并关闭 ACR 中的照片，确认 can_apply 为 true 且预览符合预期后执行：
+.\.venv\Scripts\python.exe -m lumina apply-style $photoPath $requestText --expect-plan $preview.preview_sha256
+```
+
+如果预览时使用了 `--strength`，应用时也传入同样选项。实际应用必须提供 `preview_sha256`，它同时绑定照片路径、XMP 内容、规则版本及方案；文件或方案变化后需重新预览。`apply-style --dry-run` 只检查，不保存，可以不提供摘要。重复使用已应用的旧预览会被拒绝。
+
+“画面冷一点”建议色温降低 150 K，但白平衡仍不可写，包含该项的整个方案不能应用。缺失字段、越界、否定句、重复或冲突目标均停止处理；“电影感、增加通透感、肤色自然、单独调整绿色”目前不能转换为可靠的已支持方案。完整范围见 [Phase 3 设计](docs/phase3-design.md)。
+
 ### 兼容 Phase 1 的单项曝光命令
 
 ```powershell
@@ -138,6 +169,8 @@ src/lumina/
   cli.py                 命令行与 JSON 输出
   parameters.py          独立参数范围、类型与精度规则
   adjustments.py         根据同一份 XMP 计算预览与应用
+  style_adjustments.py   摄影语言预览、方案摘要及安全应用
+  semantics/             版本化摄影词典与可解释建议
   parser/
     rules.py             明确指令语法与 set/adjust 操作
   xmp/
@@ -152,11 +185,13 @@ docs/
   validation.md          自动测试、真实文件验证和 ACR 验收
   phase2-design.md       指令语义、预览及批量写入规则
   phase2-validation.md   新增功能与独立实机验收记录
+  phase3-design.md       本地词典、强度与方案绑定规则
+  phase3-validation.md   摄影语言方案与实机验证状态
   progress.md            当前进度、边界与后续交接
 AGENTS.md                后续开发约束
 ```
 
-解析器不依赖文件或 XML；XMP 写入只接收明确的最终值，不解释语言。`adjustments` 将两者连接，保证相对运算和保存使用同一份文件快照。未来阶段的业务实现仍未加入。
+明确指令解析器与摄影词典不依赖文件或 XML；XMP 写入只接收明确的最终值，不解释语言。两类应用流程共用参数预览层，保证相对运算和保存使用同一份文件快照。
 
 ## 开发与验证
 
