@@ -4,7 +4,7 @@
 
 ## 已保存的阶段
 
-- Phase 3：17 类本地摄影规则、强度、来源解释、明确数字混合、完整预览摘要绑定及安全应用。当前分支 `codex/phase3-semantics`，基于 Phase 2 分支。243 项本地测试通过，覆盖率 96%，详细结果见 [Phase 3 验收记录](phase3-validation.md)。
+- Phase 3：17 类本地摄影规则、强度、来源解释、明确数字混合、完整预览摘要绑定及安全应用。当前分支 `codex/phase3-semantics`，草稿 [PR #3](https://github.com/dr0ppp/Lumina/pull/3)，基于 Phase 2 分支。243 项本地、独立安装及 Windows/Linux 远端测试通过，覆盖率 96%，详细结果见 [Phase 3 验收记录](phase3-validation.md)。
 - 用户确认 Phase 3 独立副本在 ACR 中曝光 +0.45、高光 -20、阴影 +20 均正确。
 
 - Phase 1：读取十项 XMP 参数、安全写曝光，用户确认 ACR 重开显示 +0.50。分支 `codex/phase1-xmp`，草稿 [PR #1](https://github.com/dr0ppp/Lumina/pull/1)。
