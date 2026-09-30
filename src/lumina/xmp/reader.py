@@ -46,7 +46,7 @@ class XmpDocument:
 def find_sidecar(nef_path: str | Path) -> tuple[Path, Path]:
     nef = Path(nef_path).expanduser().absolute()
     if nef.suffix.casefold() != ".nef":
-        raise LuminaError("Phase 1 仅接受 .NEF 文件路径。")
+        raise LuminaError("当前仅接受 .NEF 文件路径。")
     if not nef.is_file():
         raise LuminaError(f"NEF 文件不存在或不是普通文件：{nef}")
     try:
@@ -68,7 +68,7 @@ def find_sidecar(nef_path: str | Path) -> tuple[Path, Path]:
 
 def parse_xmp(data: bytes) -> etree._ElementTree:
     if len(data) > MAX_XMP_BYTES:
-        raise LuminaError("XMP 超过 Phase 1 的 16 MiB 文件大小上限。")
+        raise LuminaError("XMP 超过当前 16 MiB 文件大小上限。")
     parser = etree.XMLParser(
         resolve_entities=False, load_dtd=False, no_network=True,
         recover=False, remove_blank_text=False, remove_comments=False,
@@ -107,6 +107,13 @@ def property_slots(tree: etree._ElementTree) -> dict[str, PropertySlot]:
         # descriptions of other RDF subjects must never become write targets.
         if desc.get(f"{{{RDF}}}about") != "":
             continue
+        # An empty about is not necessarily the current photo when XML Base
+        # redirects its subject; conflicting RDF identifiers are also unsafe.
+        if any("{http://www.w3.org/XML/1998/namespace}base" in node.attrib
+               for node in (desc, *desc.iterancestors())):
+            raise LuminaError("当前照片主体含 xml:base，无法可靠定位目标。")
+        if any(f"{{{RDF}}}{name}" in desc.attrib for name in ("ID", "nodeID")):
+            raise LuminaError("当前照片主体含冲突的 RDF 标识，无法可靠定位目标。")
         for name in WATCHED_FIELDS:
             key = f"{{{CRS}}}{name}"
             if key in desc.attrib:

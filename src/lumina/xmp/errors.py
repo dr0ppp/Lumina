@@ -1,2 +1,5 @@
-class LuminaError(Exception):
-    """A user-actionable input, compatibility, or file-safety error."""
+"""Compatibility import for the shared error type."""
+
+from ..errors import LuminaError
+
+__all__ = ["LuminaError"]
