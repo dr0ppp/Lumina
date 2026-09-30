@@ -152,6 +152,7 @@ docs/
   validation.md          自动测试、真实文件验证和 ACR 验收
   phase2-design.md       指令语义、预览及批量写入规则
   phase2-validation.md   新增功能与独立实机验收记录
+  progress.md            当前进度、边界与后续交接
 AGENTS.md                后续开发约束
 ```
 

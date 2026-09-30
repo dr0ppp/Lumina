@@ -1,6 +1,6 @@
 """Resolve explicit instructions against one immutable-on-write XMP snapshot."""
 
-from decimal import Decimal
+from decimal import Context, Decimal
 from pathlib import Path
 
 from .errors import LuminaError
@@ -24,7 +24,10 @@ def _prepare(nef_path: str | Path, text: str, expected_sha256: str | None = None
         if raw is None:
             raise LuminaError(f"{name} 当前值未记录，无法可靠预览；请先在 ACR 保存该参数。")
         before = RULES[name].validate(raw, name)
-        after = operation.value if operation.operation == "set" else before + operation.value
+        after = (
+            operation.value if operation.operation == "set"
+            else Context(prec=80).add(before, operation.value)
+        )
         after = RULES[name].validate(after, name)
         updates[name] = after
         changes.append({

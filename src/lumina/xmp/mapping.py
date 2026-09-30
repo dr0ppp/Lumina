@@ -1,7 +1,7 @@
 """Explicit mappings for the modern Camera Raw basic-adjustment fields."""
 
 from dataclasses import dataclass
-from decimal import Decimal
+from decimal import Context, Decimal
 
 from ..parameters import decimal_value
 from .errors import LuminaError
@@ -45,13 +45,16 @@ def parameter_value(value: str, name: str) -> int | float:
         if number != number.to_integral_value():
             raise LuminaError(f"{name} 应为整数，XMP 中记录了 {value!r}。")
         return int(number)
-    return float(number)
+    converted = float(number)
+    if converted == 0 and number != 0:
+        raise LuminaError(f"{name} 数值过小，无法可靠输出；不会转换为零。")
+    return converted
 
 
 def exposure_value(value: object) -> Decimal:
     number = decimal_value(value, "Exposure")
     if not Decimal("-5") <= number <= Decimal("5"):
         raise LuminaError("曝光必须在 -5.00 到 +5.00 EV 之间。")
-    if number != number.quantize(Decimal("0.01")):
+    if number != number.quantize(Decimal("0.01"), context=Context(prec=80)):
         raise LuminaError("曝光最多支持两位有效小数；不会自动舍入。")
-    return abs(number) if number == 0 else number
+    return number.copy_abs() if number == 0 else number

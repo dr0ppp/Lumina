@@ -94,7 +94,7 @@ def _parse_clause(clause: str) -> Adjustment:
     number = RULES[parameter].validate(
         value_match.group("number"), parameter, relative=operation == "adjust",
     )
-    return Adjustment(parameter, operation, number * sign)
+    return Adjustment(parameter, operation, number.copy_negate() if sign == -1 else number)
 
 
 def parse_instructions(text: str) -> tuple[Adjustment, ...]:

@@ -107,6 +107,13 @@ def property_slots(tree: etree._ElementTree) -> dict[str, PropertySlot]:
         # descriptions of other RDF subjects must never become write targets.
         if desc.get(f"{{{RDF}}}about") != "":
             continue
+        # An empty about is not necessarily the current photo when XML Base
+        # redirects its subject; conflicting RDF identifiers are also unsafe.
+        if any("{http://www.w3.org/XML/1998/namespace}base" in node.attrib
+               for node in (desc, *desc.iterancestors())):
+            raise LuminaError("当前照片主体含 xml:base，无法可靠定位目标。")
+        if any(f"{{{RDF}}}{name}" in desc.attrib for name in ("ID", "nodeID")):
+            raise LuminaError("当前照片主体含冲突的 RDF 标识，无法可靠定位目标。")
         for name in WATCHED_FIELDS:
             key = f"{{{CRS}}}{name}"
             if key in desc.attrib:

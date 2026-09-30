@@ -1,7 +1,8 @@
 """Shared numeric rules; no XML, filesystem, CLI or language parsing."""
 
 from dataclasses import dataclass
-from decimal import Decimal, InvalidOperation
+from decimal import Context, Decimal, InvalidOperation
+import re
 
 from .errors import LuminaError
 
@@ -10,6 +11,9 @@ def decimal_value(value: object, name: str) -> Decimal:
     text = str(value).strip()
     if not text or len(text) > 64 or isinstance(value, bool):
         raise LuminaError(f"{name} 必须是有限数值。")
+    # Decimal accepts underscores and Unicode digits that are not XMP numbers.
+    if re.fullmatch(r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[eE][+-]?[0-9]+)?", text) is None:
+        raise LuminaError(f"{name} 不是有效数值：{text!r}")
     try:
         number = Decimal(text)
     except InvalidOperation as exc:
@@ -31,7 +35,7 @@ class ParameterRule:
         if self.integer:
             if number != number.to_integral_value():
                 raise LuminaError(f"{name} 必须是整数；不会自动舍入。")
-        elif number != number.quantize(Decimal("0.01")):
+        elif number != number.quantize(Decimal("0.01"), context=Context(prec=80)):
             raise LuminaError(f"{name} 最多支持两位有效小数；不会自动舍入。")
         low, high = self.minimum, self.maximum
         if relative:

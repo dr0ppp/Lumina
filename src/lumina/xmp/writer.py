@@ -75,8 +75,17 @@ def validate_write(document: XmpDocument, parameters: list[str]) -> None:
         if value is not None and value not in {"False", "false", "0"}:
             raise LuminaError(f"{name} 可能覆盖手动曝光；请先在 ACR 保存明确的手动设置。")
     for packet in document.tree.xpath('/processing-instruction("xpacket")'):
-        if 'end="r"' in packet.text or "end='r'" in packet.text:
+        try:
+            marker = etree.fromstring(
+                f"<packet {packet.text}/>",
+                etree.XMLParser(resolve_entities=False, load_dtd=False, no_network=True),
+            )
+        except etree.XMLSyntaxError as exc:
+            raise LuminaError("无法识别 XMP packet 标记，取消修改。") from exc
+        if marker.get("end") == "r":
             raise LuminaError("XMP packet 标记为只读，取消修改。")
+        if marker.get("end") not in {None, "w"}:
+            raise LuminaError("无法识别 XMP packet 的读写状态，取消修改。")
 
 
 def validate_expected_sha256(document: XmpDocument, expected: str | None) -> str:
