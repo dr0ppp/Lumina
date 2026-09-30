@@ -1,2 +1,3 @@
-# Phase 1 runtime, pinned for reproducible verification.
+# Runtime dependencies; pinned after local verification.
 lxml==6.1.1
+Pillow==12.3.0

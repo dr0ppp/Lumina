@@ -2,7 +2,7 @@
 
 Lumina 面向 Nikon NEF / Adobe Camera Raw 工作流，将摄影语言逐步转换为可靠的 RAW 显影参数修改。
 
-**当前为 Phase 3 开发版：本地摄影语言词典、可解释的参数方案、修改预览与 XMP 批量保存。** 词典按完整词组匹配，不分析照片，不包含 AI、Photoshop 插件或自动刷新。
+**当前为 Phase 4 开发版：可配置 AI 建议、可审核方案文件、离线安全应用。** 同时保留本地词典与明确参数指令。AI 模块已进行离线协议和故障测试，真实服务商调用尚待本机配置与单独验收；不包含 Photoshop 插件或自动刷新。
 
 ## 当前能力与范围
 
@@ -11,13 +11,14 @@ Lumina 面向 Nikon NEF / Adobe Camera Raw 工作流，将摄影语言逐步转�
 - 返回 ACR 版本、处理版本、白平衡模式、缺失字段及提示；缺失值不补零。
 - 解析十项参数的明确中文或英文指令，区分“设为”与“增加/降低”；根据当前值预览结果。
 - 支持“压高光、拉阴影、整体提亮”等 17 类本地词典规则，附来源、默认幅度和解释；支持轻微、标准、明显三档强度。
+- 可配置 OpenAI Responses 或 DeepSeek Chat Completions；AI 只生成最终值建议，校验后保存独立方案，应用时不联网。
 - 支持八项全局参数写入：曝光、对比度、高光、阴影、白色、黑色、自然饱和度、饱和度；一批修改只有一次备份和一次替换。
 - 色温、色调目前仅解析和预览，涉及白平衡的整批应用会明确拒绝。
 - 支持只预览、原字节备份、临时文件校验、外部修改检测，以及绑定预览摘要的应用。
 - 保留其他元数据、曲线、快照、局部调整及未知字段；从不写入 NEF。
 - 当前仅允许写入 `ProcessVersion="15.4"`，对应已检查的 ACR 17.5 样本。其他版本可以检查已记录字段，但禁止写入，不自动迁移。
 
-目标环境为 Windows / Photoshop 2025。本机发现 Camera Raw 17.5，真实样本也记录为 17.5。Photoshop 年份不等于 ACR 版本。[Phase 1](docs/validation.md)、[Phase 2](docs/phase2-validation.md) 和 [Phase 3 验证记录](docs/phase3-validation.md) 分别记录每阶段的实际验收范围。当前版本 `0.3.0.dev0`，尚未正式发布。
+目标环境为 Windows / Photoshop 2025。本机发现 Camera Raw 17.5，真实样本也记录为 17.5。Photoshop 年份不等于 ACR 版本。[Phase 1](docs/validation.md)、[Phase 2](docs/phase2-validation.md)、[Phase 3](docs/phase3-validation.md) 和 [Phase 4 验证记录](docs/phase4-validation.md) 分别记录实际验收范围。当前版本 `0.4.0.dev0`，尚未正式发布。
 
 ## 安装
 
@@ -132,6 +133,45 @@ $preview.blocked_reasons
 
 “画面冷一点”建议色温降低 150 K，但白平衡仍不可写，包含该项的整个方案不能应用。缺失字段、越界、否定句、重复或冲突目标均停止处理；“电影感、增加通透感、肤色自然、单独调整绿色”目前不能转换为可靠的已支持方案。完整范围见 [Phase 3 设计](docs/phase3-design.md)。
 
+### AI 建议：请求一次，审核后离线应用
+
+在本机设置密钥环境变量，把以下配置保存到 `.local/ai-config.json`。`model` 必须替换为自己账户可用、支持该接口的模型名；不要把密钥写入配置或发到聊天中。
+
+```json
+{
+  "provider": "openai",
+  "model": "YOUR_MODEL_ID",
+  "api_key_env": "LUMINA_OPENAI_API_KEY",
+  "timeout": 60,
+  "max_output_tokens": 4096
+}
+```
+
+也支持 `provider: "deepseek"`，同时更换模型名与密钥环境变量名。首版 DeepSeek 通路仅启用文字建议；Claude/Gemini 适配尚未实现。API 服务费用与本软件分开，失败后不会自动重试。
+
+显式生成建议时，会向配置的服务商发送需求、当前已记录参数及处理版本/白平衡；不会发送照片路径、RAW、完整 XMP 或无关元数据：
+
+```powershell
+.\.venv\Scripts\python.exe -m lumina ai-plan "D:\Photos\DSC_0001.NEF" "压低高光，稍微提亮暗部" --config .local/ai-config.json --output .local/review.lumina-plan.json
+```
+
+这一步仅生成方案文件并显示前后值，不改 XMP。模型输出必须是严格 JSON，数值为最终绝对值；未知、重复、非有限、越界或过度精度等结果整批拒绝。空方案表示无法形成可应用建议。白平衡继续阻断整批应用。
+
+如需 OpenAI 参考图片，先从当前照片导出 sRGB JPEG/PNG，再明确添加 `--preview "D:\Photos\preview.jpg" --send-preview`。图像限制为 20 MiB/4000 万像素，发送前定向、缩小到最长边 1600 像素、重编码为 JPEG，并剥离元数据。程序无法核实预览是否对应所选 NEF；不会自动选择或上传图片。
+
+保存方案后，下面两步完全离线，不再请求模型或读取密钥：
+
+```powershell
+$review = .\.venv\Scripts\python.exe -m lumina ai-show .local/review.lumina-plan.json | ConvertFrom-Json
+$review.changes | Format-Table
+$review.explanation
+$review.blocked_reasons
+# 审核 can_apply、完整照片路径和前后值；先保存并关闭 ACR 中该照片：
+.\.venv\Scripts\python.exe -m lumina ai-apply .local/review.lumina-plan.json --expect-plan $review.plan_sha256
+```
+
+`ai-apply --dry-run` 仅核对应用条件。方案摘要绑定照片路径、原 XMP、需求、模型来源、图片摘要和完整建议；原 XMP 或方案变化后拒绝应用旧结果。方案文件不能覆盖已有文件，`.lumina-plan.json` 已加入 Git 忽略。摘要用于核对审核内容，不是防恶意本地修改的数字签名。完整流程见 [Phase 4 设计](docs/phase4-design.md)。
+
 ### 兼容 Phase 1 的单项曝光命令
 
 ```powershell
@@ -171,6 +211,7 @@ src/lumina/
   adjustments.py         根据同一份 XMP 计算预览与应用
   style_adjustments.py   摄影语言预览、方案摘要及安全应用
   semantics/             版本化摄影词典与可解释建议
+  ai/                    模型接口、严格校验、预览图处理与离线方案应用
   parser/
     rules.py             明确指令语法与 set/adjust 操作
   xmp/
@@ -187,6 +228,8 @@ docs/
   phase2-validation.md   新增功能与独立实机验收记录
   phase3-design.md       本地词典、强度与方案绑定规则
   phase3-validation.md   摄影语言方案与实机验证状态
+  phase4-design.md       AI 请求边界与持久化方案协议
+  phase4-validation.md   离线测试与真实 API 验收状态
   progress.md            当前进度、边界与后续交接
 AGENTS.md                后续开发约束
 ```
