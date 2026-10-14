@@ -219,6 +219,7 @@ __marimo__/
 
 # Lumina: private media, sidecars, backups and local configuration.
 .local/
+*.lumina-plan.json
 photos/
 samples/
 local-config/
