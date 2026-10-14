@@ -1,11 +1,11 @@
 # 开发交接
 
-更新日期：2026-10-01。当前版本 `0.4.0.dev0`，用户已明确授权 Phase 4；本阶段仍在开发，未完成真实 API 验收。
+更新日期：2026-10-14。当前版本 `0.4.0.dev0`，用户已明确授权 Phase 4；本阶段仍在开发，未完成真实 API 验收。
 
 ## 已保存的阶段
 
 - Phase 4 当前实现：OpenAI/DeepSeek 协议适配、严格 JSON 校验、可选图片脱敏预览、方案文件及离线应用。分支 `codex/phase4-ai`，草稿 [PR #4](https://github.com/dr0ppp/Lumina/pull/4)，基于 Phase 3 分支。304 项本地/独立安装测试、Ruff、构建和包清单检查通过，覆盖率 95%。详见 [Phase 4 验证](phase4-validation.md)。本地开发安装与独立安装均为 `0.4.0.dev0`。
-- 尚未收到用户对服务商、模型名和密钥环境变量的选择。未发起真实模型调用，未上传真实照片；不能把模拟测试写成在线通过。Claude/Gemini 适配尚未实现。
+- 2026-10-14 用户选择 DeepSeek V4.1 Flash；已核对官方 API 标识为 `deepseek-flash`，约定密钥环境变量为 `LUMINA_DEEPSEEK_API_KEY`，本机配置为 `.local/deepseek.json`。待用户设置变量并重启，按 [配置说明](deepseek-setup.md) 继续文字联调。未发起真实模型调用，未上传真实照片；不能把模拟测试写成在线通过。Claude/Gemini 适配尚未实现。
 - Phase 4 代码 `65254ec` 的 Windows / Python 3.12、Ubuntu / Python 3.13 [远端检查](https://github.com/dr0ppp/Lumina/actions/runs/36741095876) 全部通过。2026-10-01 收尾时 5 小时窗口已重置，最近查询剩余 94%；当前续接依赖真实服务配置，并非因额度阈值停止。
 
 - Phase 3：17 类本地摄影规则、强度、来源解释、明确数字混合、完整预览摘要绑定及安全应用。当前分支 `codex/phase3-semantics`，草稿 [PR #3](https://github.com/dr0ppp/Lumina/pull/3)，基于 Phase 2 分支。243 项本地、独立安装及 Windows/Linux 远端测试通过，覆盖率 96%，详细结果见 [Phase 3 验收记录](phase3-validation.md)。
@@ -30,4 +30,4 @@
 
 用户设定为 5 小时剩余额度降至 20% 及以下时停止并保存。Phase 3 验收后，用户明确要求“继续下一阶段”，当前允许推进 Phase 4；不为消耗额度扩展阶段或重复运行无必要的检查。
 
-下一轮先核对分支、工作区状态、PR 与本记录。待用户指定服务商、模型和本机密钥环境变量后，使用明确配置验证真实请求；图片上传仍需明确选择文件与发送授权。根据服务商选择继续 Claude/Gemini 等适配。白平衡写入、HSL、曲线等显影字段尚未扩展。Phase 5 插件/复杂界面需另行同意。现有草稿 PR 保留，合并与正式发布另行决定。
+下一轮先核对分支、工作区状态、PR 与本记录。待用户设置 `LUMINA_DEEPSEEK_API_KEY` 并重启后，使用 `.local/deepseek.json` 验证真实文字请求；只检查指定变量是否可用，不输出其值。图片上传仍需明确选择文件与发送授权。白平衡写入、HSL、曲线等显影字段尚未扩展。Phase 5 插件/复杂界面需另行同意。现有草稿 PR 保留，合并与正式发布另行决定。

@@ -3,6 +3,7 @@
 ## [Unreleased] — 0.4.0.dev0
 
 ### Added
+- 增加 DeepSeek V4.1 Flash 官方模型标识及 Windows 环境变量配置说明；真实联调待本机密钥设置。
 - 可配置 OpenAI Responses / DeepSeek Chat Completions 适配，密钥仅从指定环境变量读取；有界响应、不跟随重定向、不自动重试。
 - 严格 JSON 建议校验，参数仅允许最终绝对值；重复、未知、越界与含糊结构整批拒绝。
 - `ai-plan`、`ai-show`、`ai-apply`，持久化可审核方案并绑定原 XMP；离线应用不再次调用模型。

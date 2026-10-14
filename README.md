@@ -257,6 +257,10 @@ AGENTS.md                后续开发约束
 
 真实 NEF、图片、XMP、备份、`.local/`、虚拟环境和密钥不进入 Git。提交前必须检查文件清单；`.gitignore` 无法阻止人为强制添加。
 
+## DeepSeek 首次配置
+
+DeepSeek V4.1 Flash 使用 API 模型名 `deepseek-flash`。首次使用可按 [Windows 密钥与配置说明](docs/deepseek-setup.md) 设置 `LUMINA_DEEPSEEK_API_KEY`；不要把密钥写入配置文件或聊天。当前 DeepSeek 通路仅支持文字建议，真实 API 联调仍待密钥配置。
+
 ## 开发路线
 
 | 阶段 | 目标 |
