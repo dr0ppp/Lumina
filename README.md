@@ -2,7 +2,7 @@
 
 Lumina 面向 Nikon NEF / Adobe Camera Raw 工作流，将摄影语言逐步转换为可靠的 RAW 显影参数修改。
 
-**当前为 Phase 4 开发版：可配置 AI 建议、可审核方案文件、离线安全应用。** 同时保留本地词典与明确参数指令。AI 模块已进行离线协议和故障测试，真实服务商调用尚待本机配置与单独验收；不包含 Photoshop 插件或自动刷新。
+**当前为 Phase 4 开发版：可配置 AI 建议、可审核方案文件、离线安全应用。** 同时保留本地词典与明确参数指令。AI 模块已进行离线协议和故障测试；DeepSeek V4.1 Flash 的两次真实文字请求与离线应用已通过，用户已确认独立副本的 ACR 三项显示正确。未验证图像建议质量，不包含 Photoshop 插件或自动刷新。
 
 ## 当前能力与范围
 
@@ -259,7 +259,7 @@ AGENTS.md                后续开发约束
 
 ## DeepSeek 首次配置
 
-DeepSeek V4.1 Flash 使用 API 模型名 `deepseek-flash`。首次使用可按 [Windows 密钥与配置说明](docs/deepseek-setup.md) 设置 `LUMINA_DEEPSEEK_API_KEY`；不要把密钥写入配置文件或聊天。当前 DeepSeek 通路仅支持文字建议，真实 API 联调仍待密钥配置。
+DeepSeek V4.1 Flash 使用 API 模型名 `deepseek-flash`。首次使用可按 [Windows 密钥与配置说明](docs/deepseek-setup.md) 设置 `LUMINA_DEEPSEEK_API_KEY`；不要把密钥写入配置文件或聊天。当前 DeepSeek 通路仅支持文字建议，已通过独立真实 API 用例，详细范围见 [验证记录](docs/phase4-validation.md)。
 
 ## 开发路线
 
