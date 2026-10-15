@@ -4,7 +4,7 @@
 
 ## 已保存的阶段
 
-- Phase 5：本机应用、参数预览/应用、持久历史、连续修改、个人风格与 UXP 面板开发包。分支 `codex/phase5-app` 基于 Phase 4。316 项测试通过，覆盖率 93%；浏览器流程及面板自动连接检查通过。详见 [验证记录](phase5-validation.md) 和 [使用说明](phase5-usage.md)。插件宿主加载与重开明确留待下次，不声称 Phase 5 已全部验收。
+- Phase 5：本机应用、参数预览/应用、持久历史、连续修改、个人风格与 UXP 面板开发包。分支 `codex/phase5-app`，草稿 [PR #5](https://github.com/dr0ppp/Lumina/pull/5)，基于 Phase 4。316 项本地及独立安装测试通过，覆盖率 93%；浏览器流程及面板自动连接检查通过。代码 `f813b2a` 的 [Windows/Linux 远端检查](https://github.com/dr0ppp/Lumina/actions/runs/38735770623) 全部通过。详见 [验证记录](phase5-validation.md) 和 [使用说明](phase5-usage.md)。插件宿主加载与重开明确留待下次，不声称 Phase 5 已全部验收。
 - 用户已有的未跟踪 `timezone shift/` 目录保留，未纳入 Lumina 改动。
 
 - Phase 4 当前实现：OpenAI/DeepSeek 协议适配、严格 JSON 校验、可选图片脱敏预览、方案文件及离线应用。分支 `codex/phase4-ai`，草稿 [PR #4](https://github.com/dr0ppp/Lumina/pull/4)，基于 Phase 3 分支。304 项本地/独立安装测试、Ruff、构建和包清单检查通过，覆盖率 95%。详见 [Phase 4 验证](phase4-validation.md)。本地开发安装与独立安装均为 `0.4.0.dev0`。
