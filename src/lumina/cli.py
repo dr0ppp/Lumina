@@ -68,9 +68,22 @@ def main(argv: list[str] | None = None) -> int:
     ai_apply.add_argument("plan", help="AI 方案文件")
     ai_apply.add_argument("--expect-plan", help="ai-show 输出的 plan_sha256，实际应用必须提供")
     ai_apply.add_argument("--dry-run", action="store_true", help="离线检查而不写入")
+    app = commands.add_parser("app", help="启动本机应用与 Photoshop 面板连接服务")
+    app.add_argument("--data-dir", default=".local/application", help="本地历史/方案目录，勿放入 Git")
+    app.add_argument("--config", help="可选模型配置文件")
+    app.add_argument("--no-browser", action="store_true", help="仅启动服务，不自动打开浏览器")
+    plugin = commands.add_parser("plugin-package", help="导出 Photoshop UXP 面板开发包")
+    plugin.add_argument("--output", required=True, help="新建 .zip 文件")
     args = parser.parse_args(argv)
     try:
-        if args.command == "read":
+        if args.command == "app":
+            from .app.server import run_app
+            run_app(args.data_dir, args.config, open_browser=not args.no_browser)
+            return 0
+        elif args.command == "plugin-package":
+            from .app.server import package_plugin
+            report = package_plugin(args.output)
+        elif args.command == "read":
             report = read_parameters(args.nef)
             if args.parameters_only:
                 for warning in report["warnings"]:

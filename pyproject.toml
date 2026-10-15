@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lumina-raw"
-version = "0.4.0.dev0"
+version = "0.5.0.dev0"
 description = "Local parameter instructions and safe Camera Raw XMP adjustments"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -15,6 +15,9 @@ lumina = "lumina.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"lumina.app.assets" = ["*.html", "*.css", "*.js", "*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

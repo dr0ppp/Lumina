@@ -34,7 +34,7 @@ def validate_plan(plan):
         text_value(normalized[field], field, 4096 if field != "model" else 128)
     if not Path(plan["nef_path"]).is_absolute() or not Path(plan["xmp_path"]).is_absolute():
         raise LuminaError("AI 方案必须绑定照片与 XMP 的完整路径。")
-    if not isinstance(plan["provider"], str) or plan["provider"] not in ENDPOINTS:
+    if not isinstance(plan["provider"], str) or plan["provider"] not in {*ENDPOINTS, "local"}:
         raise LuminaError("方案的模型来源无效。")
     if not _hash(plan["original_xmp_sha256"]) or not _hash(plan["plan_sha256"]):
         raise LuminaError("方案摘要格式无效。")
@@ -54,7 +54,8 @@ def _review(plan):
     report.update(plan_sha256=plan["plan_sha256"], provider=plan["provider"], model=plan["model"],
                   request=plan["request"], explanation=plan["proposal"]["explanation"], image_sha256=plan["image_sha256"])
     report["warnings"].extend(plan["proposal"]["warnings"])
-    report["warnings"].append("AI 仅提供建议，未保证视觉效果；请审核前后值并在 ACR 检查。")
+    report["warnings"].append("参数方案仅提供建议，未保证视觉效果；请审核前后值并在 ACR 检查。")
+    report["warnings"] = list(dict.fromkeys(report["warnings"]))
     return document, updates, report
 
 

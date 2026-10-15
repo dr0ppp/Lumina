@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lumina · RAW 工作室</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<main>
+  <header><div><p class="eyebrow">LUMINA / RAW 工作室</p><h1>让想法，成为参数。</h1><p class="muted">先预览，再应用。每一次改变都有记录。</p></div><span id="connection-state" class="badge">尚未连接</span></header>
+  <section class="connection"><button id="connect">载入本机连接文件</button><span class="muted" id="model">本地模式不需要 AI</span><input type="file" id="connection-file" accept=".json" hidden></section>
+  <p id="message" role="status" aria-live="polite">选择照片，开始一次调整。</p>
+  <div class="columns">
+    <section class="card editor">
+      <p class="eyebrow">01 / 照片与想法</p><h2>你想改变什么？</h2>
+      <label for="nef">NEF 完整路径</label><div class="row"><input id="nef" placeholder="D:\photo\DSC_3954.NEF"><button id="pick" hidden>选择照片</button><button id="read">读取</button></div>
+      <p class="muted small">照片旁需有同名 XMP；请先在 Camera Raw 中保存设置。</p>
+      <div id="current" class="parameters"><p class="muted">读取后显示当前显影参数</p></div>
+      <label for="mode">建议方式</label><select id="mode"><option value="local">本地摄影词典</option><option value="numeric">明确参数指令</option><option value="ai">AI 辅助建议</option><option value="style">我的风格</option></select>
+      <label for="text">调整需求</label><textarea id="text" rows="4" placeholder="例如：压高光，拉阴影，整体提亮"></textarea>
+      <div id="style-controls" hidden><label for="style">个人风格</label><select id="style"><option value="">还没有保存的风格</option></select><p class="muted small">风格保存增减量，会根据当前照片重新计算。</p></div>
+      <label id="consent-row" class="check" hidden><input id="consent" type="checkbox">同意向所示模型服务发送当前十项参数、处理版本、白平衡模式和需求；不发送照片或路径。</label>
+      <button id="preview" class="primary">生成参数预览</button>
+    </section>
+    <section class="card review">
+      <p class="eyebrow">02 / 审核与应用</p><h2>把每一项变化看清楚</h2>
+      <div id="changes" class="empty">还没有待审核的方案。<br>生成预览不会修改照片设置。</div>
+      <p id="explanation" class="muted"></p><div id="warnings" class="warnings"></div>
+      <label class="check"><input id="closed" type="checkbox">我已保存并关闭 Camera Raw 中的这张照片</label>
+      <button id="apply" class="primary" disabled>应用已审核方案</button>
+      <button id="reopen" hidden>在 Photoshop 中重新打开</button>
+      <p class="muted small">应用后重开 NEF 查看效果。已打开的 Camera Raw 不会自动刷新。</p>
+      <div class="save-style"><label for="style-name">保存为个人风格</label><div class="row"><input id="style-name" maxlength="80" placeholder="例如：柔和明亮"><button id="save-style" disabled>保存风格</button></div></div>
+    </section>
+  </div>
+  <section class="card history"><div class="row between"><div><p class="eyebrow">03 / 调整足迹</p><h2>历史记录</h2></div><button id="refresh">刷新记录</button></div><p class="muted small">显示当前照片最近记录；“待核对”表示需要检查 XMP 与备份，切勿重复应用。</p><div id="history" class="muted">暂无记录</div></section>
+  <footer>RAW 原片保持不变 · XMP 原字节备份 · 本地工作区 · 开发版</footer>
+</main><script src="panel.js"></script>
+</body></html>

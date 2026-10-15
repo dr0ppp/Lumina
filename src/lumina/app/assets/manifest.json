@@ -1,0 +1,10 @@
+{
+  "manifestVersion": 5,
+  "id": "lumina.raw.panel",
+  "name": "Lumina RAW 工作室",
+  "version": "0.5.0",
+  "main": "index.html",
+  "host": {"app": "PS", "minVersion": "26.0.0"},
+  "entrypoints": [{"type": "panel", "id": "lumina", "label": {"default": "Lumina"}, "minimumSize": {"width": 320, "height": 500}, "preferredDockedSize": {"width": 380, "height": 760}, "preferredFloatingSize": {"width": 900, "height": 850}}],
+  "requiredPermissions": {"localFileSystem": "request", "network": {"domains": ["http://127.0.0.1:8765"]}}
+}

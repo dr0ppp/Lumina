@@ -23,6 +23,7 @@ def main() -> None:
     version = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]["version"]
     name = f"lumina_raw-{version}"
     source = {p.relative_to(ROOT / "src").as_posix() for p in (ROOT / "src/lumina").rglob("*.py")}
+    source |= {f"lumina/app/assets/{name}" for name in ('index.html', 'panel.js', 'style.css', 'manifest.json')}
     info = f"{name}.dist-info"
     wheel_files = source | {
         f"{info}/{filename}" for filename in (
@@ -40,7 +41,7 @@ def main() -> None:
         "requirements.txt", "requirements-dev.txt",
         *(f"src/{path}" for path in source),
         *(p.relative_to(ROOT).as_posix() for directory, pattern in (
-            ("tests", "*.py"), ("docs", "*.md"), ("tools", "*.py"),
+            ("tests", "*.py"), ("docs", "*.md"), ("tools", "*.py"), ("tools", "*.cjs"),
         ) for p in (ROOT / directory).glob(pattern)),
     }
     generated = {"PKG-INFO", "setup.cfg"} | {

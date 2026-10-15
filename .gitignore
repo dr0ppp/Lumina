@@ -219,6 +219,11 @@ __marimo__/
 
 # Lumina: private media, sidecars, backups and local configuration.
 .local/
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
+connection.json
 *.lumina-plan.json
 photos/
 samples/
