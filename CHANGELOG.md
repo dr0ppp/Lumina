@@ -1,6 +1,20 @@
 # Changelog
 
-## [Unreleased] — 0.4.0.dev0
+## [Unreleased] — 0.5.0.dev0
+
+### Changed
+- 2026-10-16 按用户要求改为 Photoshop 风格深灰面板：去除绿色卡片、大标题和装饰性文案，采用紧凑控件、参数数值框及当前/调整后三列对照。浏览器与 UXP 面板共用新设计。
+
+### Added
+- 本机应用与 Photoshop UXP 面板开发包，共用参数读取、预览、确认应用界面。
+- SQLite 持久历史、连续调整与个人风格增减量复用；方案一次消费，中断后不自动重放。
+- 回环监听、随机连接令牌、Host/Origin 检查和有界 JSON；AI 外发需明确勾选。
+
+### Validation status
+- 316 项 Python 测试通过，覆盖率 93%；代码检查、面板自动连接回归和 Windows/Linux 远端检查通过。浏览器实测读取、预览、应用、风格及历史通过。
+- 用户明确将 Photoshop 插件实机验收留待下次；不将网页通过视为宿主通过。
+
+## 0.4.0.dev0 — 2026-10-14（未正式发布）
 
 ### Added
 - 增加 DeepSeek V4.1 Flash 官方模型标识及 Windows 环境变量配置说明。

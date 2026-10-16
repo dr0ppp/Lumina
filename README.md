@@ -2,7 +2,7 @@
 
 Lumina 面向 Nikon NEF / Adobe Camera Raw 工作流，将摄影语言逐步转换为可靠的 RAW 显影参数修改。
 
-**当前为 Phase 4 开发版：可配置 AI 建议、可审核方案文件、离线安全应用。** 同时保留本地词典与明确参数指令。AI 模块已进行离线协议和故障测试；DeepSeek V4.1 Flash 的两次真实文字请求与离线应用已通过，用户已确认独立副本的 ACR 三项显示正确。未验证图像建议质量，不包含 Photoshop 插件或自动刷新。
+**当前为 Phase 5 应用开发版：图形界面、参数预览与应用、历史记录、连续修改和个人风格。** 提供本机浏览器应用及 Photoshop UXP 面板开发包；用户已选择将插件宿主实机验收留待下次。沿用此前通过验收的 XMP 读写和 DeepSeek 文字建议流程，不代表图像建议或所有插件行为已通过验收。
 
 ## 当前能力与范围
 
@@ -18,7 +18,7 @@ Lumina 面向 Nikon NEF / Adobe Camera Raw 工作流，将摄影语言逐步转�
 - 保留其他元数据、曲线、快照、局部调整及未知字段；从不写入 NEF。
 - 当前仅允许写入 `ProcessVersion="15.4"`，对应已检查的 ACR 17.5 样本。其他版本可以检查已记录字段，但禁止写入，不自动迁移。
 
-目标环境为 Windows / Photoshop 2025。本机发现 Camera Raw 17.5，真实样本也记录为 17.5。Photoshop 年份不等于 ACR 版本。[Phase 1](docs/validation.md)、[Phase 2](docs/phase2-validation.md)、[Phase 3](docs/phase3-validation.md) 和 [Phase 4 验证记录](docs/phase4-validation.md) 分别记录实际验收范围。当前版本 `0.4.0.dev0`，尚未正式发布。
+目标环境为 Windows / Photoshop 2025。本机发现 Camera Raw 17.5，真实样本也记录为 17.5。Photoshop 年份不等于 ACR 版本。[Phase 1](docs/validation.md)、[Phase 2](docs/phase2-validation.md)、[Phase 3](docs/phase3-validation.md) 和 [Phase 4 验证记录](docs/phase4-validation.md) 分别记录实际验收范围。当前版本 `0.5.0.dev0`，尚未正式发布。
 
 ## 安装
 
@@ -256,6 +256,16 @@ AGENTS.md                后续开发约束
 输出在 `dist/`。源码包包含测试公共数据生成器和开发文档；安装包只含程序和包信息。检查脚本按明确清单拒绝额外文件。GitHub 工作流在 Windows/Python 3.12 与 Linux/Python 3.13 上构建、检查包内容，再安装 wheel 运行测试；Adobe 实机验收仍需单独完成。
 
 真实 NEF、图片、XMP、备份、`.local/`、虚拟环境和密钥不进入 Git。提交前必须检查文件清单；`.gitignore` 无法阻止人为强制添加。
+
+## 启动 Lumina 应用
+
+```powershell
+.\.venv\Scripts\python.exe -m lumina app --data-dir .local/application --config .local/deepseek.json
+```
+
+浏览器自动打开；去掉 `--config` 可只用本地模式。先读取 NEF 参数、生成预览、审核变化，再确认已保存关闭 ACR 并应用。界面支持个人风格与持久历史，修改需求或照片后需重新预览。服务只在本机运行，按 Ctrl+C 停止。
+
+完整操作与 Photoshop 插件加载步骤见 [应用使用说明](docs/phase5-usage.md)，验证范围见 [Phase 5 验证](docs/phase5-validation.md)。开发包可通过 `lumina plugin-package --output .local/Lumina-uxp.zip` 导出；这是 UXP Developer Tool 加载包，不是商店发布版。
 
 ## DeepSeek 首次配置
 
